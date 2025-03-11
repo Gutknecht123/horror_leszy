@@ -1,0 +1,45 @@
+[gd_scene load_steps=8 format=3 uid="uid://b0fn5ovxn1mrh"]
+
+[ext_resource type="Texture2D" uid="uid://c7fv3rt6al7j4" path="res://models/house/Ornaments.png" id="1_1wjj6"]
+[ext_resource type="Script" uid="uid://cqtkaifbtj475" path="res://Ground.cs" id="1_vigqh"]
+[ext_resource type="PackedScene" uid="uid://c00amrobjqglf" path="res://models/Animated_Character/player_test.tscn" id="5_kdx2d"]
+[ext_resource type="PackedScene" uid="uid://x2ee0587qxv8" path="res://models/env/FBX/Grass.fbx" id="6_204sq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kdx2d"]
+albedo_texture = ExtResource("1_1wjj6")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_i2ice"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_e5alk"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[node name="World" type="Node3D"]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.252277, 19.5482, 0.893887)
+omni_range = 39.073
+omni_attenuation = 0.0
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_kdx2d")
+mesh = SubResource("PlaneMesh_i2ice")
+script = ExtResource("1_vigqh")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_e5alk")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.1269, 2.74995, 12.3679)
+visible = false
+use_collision = true
+size = Vector3(3.02, 1.01, 2.565)
+
+[node name="Grass" parent="." instance=ExtResource("6_204sq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.30429, -0.00780919, 16.1582)
+visible = false
+
+[node name="Player" parent="." instance=ExtResource("5_kdx2d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.0975, 1, 5.21771)

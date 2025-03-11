@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cfe2hio27k7qd"
+path="res://.godot/imported/StylizedCharacter.obj-e6e0263f53d8d93a928d8aa32b7daa25.mesh"
+
+[deps]
+
+files=["res://.godot/imported/StylizedCharacter.obj-e6e0263f53d8d93a928d8aa32b7daa25.mesh"]
+
+source_file="res://models/Animated_Character/OBJ/StylizedCharacter.obj"
+dest_files=["res://.godot/imported/StylizedCharacter.obj-e6e0263f53d8d93a928d8aa32b7daa25.mesh", "res://.godot/imported/StylizedCharacter.obj-e6e0263f53d8d93a928d8aa32b7daa25.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
