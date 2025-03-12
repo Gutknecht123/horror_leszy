@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class PlayerTest : CharacterBody3D
+public partial class Character : CharacterBody3D
 {
     
     const float speed = 5.0f;
@@ -24,7 +24,9 @@ public partial class PlayerTest : CharacterBody3D
     public CollisionShape3D collisionShape;
     public MeshInstance3D mesh;
     public Node3D character_model;
-    public AnimationPlayer animations;
+    public AnimationTree animations;
+    Vector2 lastInputDirection = new();
+    
 
     private Vector3 velocity = Vector3.Zero;
 
@@ -39,7 +41,7 @@ public partial class PlayerTest : CharacterBody3D
         targetHeight = defaultCameraY;
         Input.MouseMode = Input.MouseModeEnum.Captured;
         character_model = GetNode<Node3D>("Armature");
-        animations = GetNode<AnimationPlayer>("AnimationPlayer");
+        animations = GetNode<AnimationTree>("AnimationTree");
 
     }
 
@@ -86,12 +88,13 @@ public partial class PlayerTest : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-
+        
         Vector2 inputDir = Input.GetVector("left", "right", "up", "down");
         Vector3 direction = (head.GlobalTransform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         float newSpeed = speed;
         float newAcc = acceleration;
-
+        float newPosSprint;
+        GD.Print(cam.Position.Z);
         if(direction != Vector3.Zero){
 
             if(Input.IsActionPressed("sprint") && !isCrouching){
@@ -99,9 +102,11 @@ public partial class PlayerTest : CharacterBody3D
                 isSprinting = true;
                 newAcc = 0.7f;
                 newSpeed = sprint_speed;
-                animations.Play("Run");
+                newPosSprint = -0.55f;
+                
             }else{
                 isSprinting = false;
+                newPosSprint = -0.16f;
             }
             if (Input.IsActionPressed("crouch") && !isSprinting){
                 
@@ -112,19 +117,17 @@ public partial class PlayerTest : CharacterBody3D
             }else{
                 isCrouching = false;
             }
-            if(IsOnFloor() && !isSprinting && !isCrouching && (Input.IsActionPressed("up") || Input.IsActionPressed("down") || Input.IsActionPressed("left") || Input.IsActionPressed("right"))){
-                animations.Play("Walk");
-            }  
+
             acceleration = newAcc;
             velocity.X = direction.X * newSpeed;
             velocity.Z = direction.Z * newSpeed;
-
             
 
         }else{
             velocity.X = Mathf.MoveToward(Velocity.X, 0, newAcc);
             velocity.Z = Mathf.MoveToward(Velocity.Z, 0, newAcc);
-            animations.Play("Iddle");
+            isSprinting = false;
+            newPosSprint = -0.16f;
         }
 
         if(!IsOnFloor()){
@@ -136,9 +139,22 @@ public partial class PlayerTest : CharacterBody3D
             
         }
 
-
-        
         Velocity = velocity;
+        
+        animations.Set("parameters/conditions/idle", (IsOnFloor() && inputDir == Vector2.Zero));
+        animations.Set("parameters/conditions/moving", (IsOnFloor() && inputDir != Vector2.Zero && !isCrouching));
+        animations.Set("parameters/conditions/jumping", (!IsOnFloor()));
+        if(newSpeed > 5.0f){
+            animations.Set("parameters/Walking/blend_position", new Vector2(Mathf.Lerp(lastInputDirection.X, inputDir.X, 0.15f), Mathf.Lerp(lastInputDirection.Y, inputDir.Y, 0.15f)));
+        }else{
+            animations.Set("parameters/Walking/blend_position", new Vector2(Mathf.Lerp(lastInputDirection.X/2, inputDir.X, 0.15f), Mathf.Lerp(lastInputDirection.Y/2, inputDir.Y, 0.15f)));
+        }
+        lastInputDirection = inputDir;
+
+        Vector3 camPosSprint = cam.Position;
+        camPosSprint.Z = Mathf.Lerp(camPosSprint.Z, newPosSprint, (float)delta * 40.0f);
+        cam.Position = camPosSprint;
+
         MoveAndSlide();
     }
 }
