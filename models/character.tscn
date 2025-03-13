@@ -226,6 +226,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.848862, 0.0443799)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.163144)
 fov = 80.0
 
+[node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+target_position = Vector3(0, -1.6, 0)
+collision_mask = 2
+debug_shape_thickness = 3
+
 [node name="AnimationTree" type="AnimationTree" parent="." index="5"]
 tree_root = SubResource("AnimationNodeStateMachine_ukebs")
 anim_player = NodePath("../AnimationPlayer")

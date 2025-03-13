@@ -25,7 +25,11 @@ public partial class Character : CharacterBody3D
     public MeshInstance3D mesh;
     public Node3D character_model;
     public AnimationTree animations;
+    public DialogueBoxControl dialogueBox;
+    public RayCast3D RayCast;
     Vector2 lastInputDirection = new();
+
+    
     
 
     private Vector3 velocity = Vector3.Zero;
@@ -43,6 +47,11 @@ public partial class Character : CharacterBody3D
         character_model = GetNode<Node3D>("Armature");
         animations = GetNode<AnimationTree>("AnimationTree");
 
+        //RayCast
+        RayCast = GetNode<RayCast3D>("Head/Camera3D/RayCast3D");
+        //Dialogues
+        dialogueBox = GetNode<DialogueBoxControl>("/root/World/DialoguesBox");
+        
     }
 
     public override void _Input(InputEvent @event)
@@ -84,6 +93,8 @@ public partial class Character : CharacterBody3D
         Vector3 camDirection = -cam.GlobalTransform.Basis.Z;
         character_model.LookAt(character_model.GlobalTransform.Origin + new Vector3(-camDirection.X, 0, -camDirection.Z));
 
+
+
     }
 
     public override void _PhysicsProcess(double delta)
@@ -94,7 +105,7 @@ public partial class Character : CharacterBody3D
         float newSpeed = speed;
         float newAcc = acceleration;
         float newPosSprint;
-        GD.Print(cam.Position.Z);
+        
         if(direction != Vector3.Zero){
 
             if(Input.IsActionPressed("sprint") && !isCrouching){
@@ -139,6 +150,15 @@ public partial class Character : CharacterBody3D
             
         }
 
+        if(Input.IsActionJustPressed("interact") && RayCast.IsColliding()){
+            var collider = RayCast.GetCollider();
+
+            if(collider != null){
+                GD.Print($"Interacting with: {collider}");
+                dialogueBox.ShowDialogue("Jestem Qugor i jestem mega cwelem");
+            }
+        }
+
         Velocity = velocity;
         
         animations.Set("parameters/conditions/idle", (IsOnFloor() && inputDir == Vector2.Zero));
@@ -156,5 +176,6 @@ public partial class Character : CharacterBody3D
         cam.Position = camPosSprint;
 
         MoveAndSlide();
+
     }
 }
